@@ -4,6 +4,6 @@ Improved cloud forecasting could assist in solar energy projection and satellite
 
 We employ a transformer architecture trained on a novel global mosaic constructed from a constellation of 5 geostationary satellites over 11 visible light and IR channels. Each observation channel captures something unique about the states and flows of moisture and energy in the Earth’s atmosphere. 
 
-<img src="./assets/sats.png" width="500px"></img>
+<img src="./assets/sats.png" width="700px"></img>
 
 
