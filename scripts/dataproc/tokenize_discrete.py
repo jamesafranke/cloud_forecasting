@@ -5,6 +5,8 @@ from satpy.scene import Scene
 import datashader as das
 import dask.array as da
 
+root = '/share/data/2pals/jim/data/'
+
 # tokenize
 tokens = np.array([0,0,0,0,0,0,0,0,0,0,0,0]) #,0,0,0,0,0,0,0])
 for i in range(40000): tokens = np.vstack((tokens,np.random.choice([0, 1], size=12)))
@@ -12,8 +14,6 @@ tokens = np.unique(tokens, axis=0)
 
 y = np.array([1,1,1,1,1,1,1,1,1,1,1,1])
 token = np.argmin(np.abs(y-tokens).sum(axis=1))
-
-
 
 fl = glob('/share/data/2pals/jim/data/tokenized/*')
 i=9 #band
