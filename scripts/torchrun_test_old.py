@@ -119,8 +119,7 @@ def demo_basic():
     # configure map_location properly
     if os.path.exists(CHECKPOINT_PATH):
       map_location = {'cuda:%d' % 0: 'cuda:%d' % rank}
-      ddp_model.load_state_dict(
-        torch.load(CHECKPOINT_PATH, map_location=map_location))
+      ddp_model.load_state_dict( torch.load(CHECKPOINT_PATH, map_location=map_location))
       # Use a barrier() to make sure that process 1 loads the model after process
       # 0 saves it.
       dist.barrier()
