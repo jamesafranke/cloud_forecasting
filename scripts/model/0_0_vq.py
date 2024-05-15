@@ -1,5 +1,6 @@
 import torch
 from torch.autograd import Function
+import cv2
 
 class VectorQuantization(Function):
     @staticmethod
