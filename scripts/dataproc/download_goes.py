@@ -10,6 +10,9 @@ if num==16: datelist = pd.date_range('2018-09-01T00:00:00', '2024-02-01T00:00:00
 else: datelist = pd.date_range('2019-01-01T00:00:00', '2024-02-01T00:00:00', freq='30min').tolist()
 random.shuffle(datelist)
 
+datelist = pd.date_range('2019-01-01T00:00:00', '2020-01-01T00:00:00', freq='30min').tolist()
+random.shuffle(datelist)
+
 biglat   = np.load(f'/share/data/2pals/jim/data/geostat/latlon/goes{num}biglat.npy')
 biglon   = np.load(f'/share/data/2pals/jim/data/geostat/latlon/goes{num}biglon.npy')
 medlat   = np.load(f'/share/data/2pals/jim/data/geostat/latlon/goes{num}medlat.npy')
@@ -20,7 +23,7 @@ smalllon = np.load(f'/share/data/2pals/jim/data/geostat/latlon/goes{num}smalllon
 os.chdir(f'/share/data/2pals/jim/data/geostat/')
 
 for t in datelist:
-    for band in [2,3,5,7,8,10,11,12,13,15,16]:
+    for band in [8,12,16]: #[2,3,5,7,8,10,11,12,13,15,16]:
         path = f'/share/data/2pals/jim/data/geostat/goes{num}/{t.year}/OR_ABI-L1b-RadF-M3C{band:02}_G{num}_s{t.year}{t.dayofyear:03}{t.hour:02}{t.minute:02}.npy'
         if os.path.exists(path) == False:  
             try:
