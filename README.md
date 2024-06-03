@@ -1,4 +1,4 @@
-# near real-time data-driven cloud forecasting based on geostationary satellite retrievals
+# real-time data-driven cloud forecasting based on geostationary satellite retrievals
 
 Improved cloud forecasting could assist in solar energy projection and satellite information gathering efforts, especially in disaster response. Numerical models cannot explicitly resolve clouds over large geographic domains. Geostationary satellites provide an untapped resource for data-driven methods for cloud forecasting. 
 
