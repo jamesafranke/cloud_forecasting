@@ -2,7 +2,7 @@ import os, fnmatch, random, datetime, numpy as np, pandas as pd, pylab as plt
 import datashader as das, dask.array as da
 from glob import glob
 
-datelist = pd.date_range('2019-01-01T00:00:00', '2020-01-01T00:00:00', freq='30min').tolist()
+datelist = pd.date_range('2020-01-01T00:00:00', '2020-06-01T00:00:00', freq='30min').tolist()
 random.shuffle(datelist)
 
 root = '/share/data/2pals/jim/data/'

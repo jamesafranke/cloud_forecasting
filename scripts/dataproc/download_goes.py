@@ -2,7 +2,7 @@ import os, fnmatch, random, s3fs, numpy as np, pandas as pd
 from satpy.scene import Scene
 import datashader as das
 
-num = 17
+num = 16
 fs = s3fs.S3FileSystem( anon = True )
 root = f'noaa-goes{num}/ABI-L1b-RadF/'
 
@@ -10,7 +10,7 @@ if num==16: datelist = pd.date_range('2018-09-01T00:00:00', '2024-02-01T00:00:00
 else: datelist = pd.date_range('2019-01-01T00:00:00', '2024-02-01T00:00:00', freq='30min').tolist()
 random.shuffle(datelist)
 
-datelist = pd.date_range('2019-01-01T00:00:00', '2020-01-01T00:00:00', freq='30min').tolist()
+datelist = pd.date_range('2020-01-01T00:00:00', '2022-06-01T00:00:00', freq='30min').tolist()
 random.shuffle(datelist)
 
 biglat   = np.load(f'/share/data/2pals/jim/data/geostat/latlon/goes{num}biglat.npy')
