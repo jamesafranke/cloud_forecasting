@@ -1,4 +1,5 @@
-import torch, os, pickle, numpy as np
+import torch, os, numpy as np
+from glob import glob
 from torch.utils.data import Dataset
 from openstl.api import BaseExperiment
 from openstl.utils import create_parser, default_parser
@@ -7,14 +8,12 @@ torch.set_float32_matmul_precision('medium')
 
 pre_seq_length = 2
 aft_seq_length = 1
-batch_size = 4
-n_epoch = 250
-name = '13_hid256_512_2x1'
+batch_size = 10
+n_epoch = 30
+name = '01_2x1_big_2'
 
 root = '/share/data/2pals/jim/data/openstl/'
 os.chdir(root)
-
-#with open('dataset.pkl', 'rb') as f: dataset = pickle.load(f)
 
 class CustomDataset(Dataset):
     def __init__(self, X, Y, data_name='custom'):
@@ -33,22 +32,28 @@ class CustomDataset(Dataset):
         labels = torch.tensor(self.Y[index]).float()
         return data, labels
 
-#X_train, X_val, X_test, Y_train, Y_val, Y_test = dataset['X_train'], dataset['X_val'], dataset['X_test'], dataset['Y_train'], dataset['Y_val'], dataset['Y_test']
-X_train = np.load(f'goes2019_trainX_1562.npy')
-Y_train = np.load(f'goes2019_trainY_1562.npy')
+print('-------- starting dataloading ------------')
+flX = glob('/share/data/2pals/jim/data/openstl/2x1stacks/*X.npy')
+flX = np.sort(flX)
+X_train = np.empty((1,2,3,256,256), dtype=np.float32)
+for file in flX[1::2]: X_train = np.concatenate((X_train, np.load(file)), axis=0)
+
+flY = glob('/share/data/2pals/jim/data/openstl/2x1stacks/*Y.npy')
+flY = np.sort(flY)
+Y_train = np.empty((1,1,3,256,256), dtype=np.float32)
+for file in flY[1::2]: Y_train = np.concatenate((Y_train, np.load(file)), axis=0)
 
 dim = 256
-X_val   = X_train[-30:,-2:,:,:dim,:dim]  #np.load(f'{root}goes2019_valX.npy')
-Y_val   = Y_train[-30:,1,:,:dim,:dim]  #np.load(f'{root}goes2019_valY.npy')
+X_val = X_train[-50:,:,:,:,:] 
+Y_val = Y_train[-50:,:,:,:,:] 
 
-X_train = X_train[:1480,-2:,:,:dim,:dim]
-Y_train = Y_train[:1480,1,:,:dim,:dim]
+X_train = X_train[1:-50,:,:,:,:]
+Y_train = Y_train[1:-50,:,:,:,:]
 
-#X_test  = X_train[-10:,:,:,:dim,:dim]  #np.load(f'{root}goes2019_testX.npy')
-#Y_test  = Y_train[-10:,:,:,:dim,:dim]  #np.load(f'{root}goes2019_testY.npy')
-X_test = np.load(f'testX.npy')[:,-2:,:,:dim,:dim]
-Y_test = np.load(f'testY.npy')[:,1,:,:dim,:dim]
+print('-----------', X_train.shape[0], '--------------training samples')
 
+X_test = np.load(f'{root}testX.npy')[:,-2:,:,:dim,:dim]
+Y_test = np.load(f'{root}testY.npy')[:,1,:,:dim,:dim]
 
 train_set = CustomDataset(X=X_train, Y=Y_train)
 val_set   = CustomDataset(X=X_val, Y=Y_val)

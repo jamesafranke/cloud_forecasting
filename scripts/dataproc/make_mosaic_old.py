@@ -54,37 +54,30 @@ for t in datelist:
         with ZipFile(fl[0], 'r') as zObject: zObject.extractall( path=f'{root}temp2/' ) 
         scn2 = Scene( reader="seviri_l1b_native", filenames=glob(f'{root}temp2/*nat') )
         
-        for i in [0]: 
+        for i in [0]: #range(1):
             path = f'{root}stitch_corrected/{t.year}{t.month:02}{t.day:02}{t.hour:02}{t.minute:02}_B{i:02}.npy'
             if os.path.exists(path) == False:
-                mean = np.load(f'{root}correction/zerodegree_B{i:02}_h{t.hour:02}_{t.minute:02}_mean.npy') 
-                std  = np.load(f'{root}correction/zerodegree_B{i:02}_h{t.hour:02}_{t.minute:02}_std.npy') 
                 temp = aggmet(scn1, metbands[i], LAT0, LON0, np.arange(-37.7,22.8,0.1))
+                out  = scale(temp, metmin[i], metmax[i])
                 out = (temp - mean) / std
 
-                mean = np.load(f'{root}correction/indian_B{i:02}_h{t.hour:02}_{t.minute:02}_mean.npy') 
-                std  = np.load(f'{root}correction/indian_B{i:02}_h{t.hour:02}_{t.minute:02}_std.npy') 
                 temp = aggmet(scn2, metbands[i], LATi, LONi, np.arange(22.8,92.0,0.1))
+                temp = scale(temp, met2min[i], met2max[i])
                 out  = np.hstack( (out, (temp - mean) / std ) )
                 
-                mean = np.load(f'{root}correction//himawari_B{i:02}_h{t.hour:02}_{t.minute:02}_mean.npy') 
-                std  = np.load(f'{root}correction//himawari_B{i:02}_h{t.hour:02}_{t.minute:02}_std.npy') 
                 temp = np.load(glob(f'{root}geostat/himawari/{t.year}/HS_{t.year}{t.month:02}{t.day:02}{t.hour:02}{t.minute:02}_B{himbands[i]:02}.npy')[0])
-                temp = (temp - mean) / std 
-                out  = np.hstack( (out, temp[:,:-12] ) )
+                temp = scale(temp[:,:-12], himmin[i], himmax[i])
+                out  = np.hstack( (out, (temp - mean) / std )[:,:-12] )
             
-                mean = np.load(f'{root}correction/goes17_B{i:02}_h{t.hour:02}_{t.minute:02}_mean.npy') 
-                std  = np.load(f'{root}correction/goes17_B{i:02}_h{t.hour:02}_{t.minute:02}_std.npy') 
                 temp = np.load(glob(f'{root}geostat/goes17/{t.year}/*{goesbands[i]:02}_G17_s{t.year}{t.dayofyear:03}{t.hour:02}{t.minute:02}.npy')[0])
-                temp = (temp - mean) / std 
-                out  = np.hstack( (out, temp[:,7:-11] ) )
-
-                mean = np.load(f'{root}correction/goes16_B{i:02}_h{t.hour:02}_{t.minute:02}_mean.npy') 
-                std  = np.load(f'{root}correction/goes16_B{i:02}_h{t.hour:02}_{t.minute:02}_std.npy') 
+                temp = scale(temp[:,7:-11], goesmin[i], goesmax[i])
+                out  = np.hstack( (out, (temp - mean) / std )[:,7:-11] )
+                
                 temp = np.load(glob(f'{root}geostat/goes16/{t.year}/*{goesbands[i]:02}_G16_s{t.year}{t.dayofyear:03}{t.hour:02}{t.minute:02}.npy')[0])
-                temp = (temp - mean) / std 
-                out  = np.hstack( (out, temp[:,10:-15] ) )
+                temp = scale(temp[:,10:-15], goesmin[i], goesmax[i])
+                out  = np.hstack( (out, (temp - mean) / std )[:,10:-15] ) 
                 
                 np.save(path, out.astype(np.float32))
             else: print('done')
     else: print('done')
+

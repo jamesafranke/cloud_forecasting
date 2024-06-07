@@ -34,15 +34,19 @@ jupyter lab --ip=$NODEIP --port=$NODEPORT --no-browser
 eval "$(/share/data/2pals/jim/code/python/mc3/bin/conda 'shell.bash' 'hook')"
 python stlrun.py
 
+sbatch -p gpu -G1 -C48g openstl.sbatch
 
-sbatch -p gpu -G1 openstl.sbatch
+sbatch -p gpu -G6 -C48g openstl.sbatch
 
-#!/bin/bash
+
+#!/bin/bassh
 #SBATCH --job-name=goes
 eval "$(/share/data/2pals/jim/code/python/mc3/bin/conda 'shell.bash' 'hook')"
 python goes.py
 
 
-sbatch -p cpu goes.sbatch
+sbatch -p cpu -C4 goes.sbatch
 
 sbatch -p cpu beerun.sbatch
+
+sbatch -p gpu -G1 beerun.sbatch

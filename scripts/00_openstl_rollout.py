@@ -1,4 +1,4 @@
-import torch, os, pickle, numpy as np
+import torch, cv2, os, pickle, numpy as np
 from torch.utils.data import Dataset
 from openstl.api import BaseExperiment
 from openstl.utils import create_parser, default_parser
@@ -7,14 +7,14 @@ torch.set_float32_matmul_precision('medium')
 
 pre_seq_length = 2
 aft_seq_length = 1
-batch_size = 4
-n_epoch = 250
-name = '13_hid256_512_2x1'
+batch_size = 10
+n_epoch = 10
+#name = 'band4710_07_hid64_5x5'
+#name = 'band4710_06_hid64'
+name = '01_2x1_big_2'
 
 root = '/share/data/2pals/jim/data/openstl/'
 os.chdir(root)
-
-#with open('dataset.pkl', 'rb') as f: dataset = pickle.load(f)
 
 class CustomDataset(Dataset):
     def __init__(self, X, Y, data_name='custom'):
@@ -33,22 +33,14 @@ class CustomDataset(Dataset):
         labels = torch.tensor(self.Y[index]).float()
         return data, labels
 
-#X_train, X_val, X_test, Y_train, Y_val, Y_test = dataset['X_train'], dataset['X_val'], dataset['X_test'], dataset['Y_train'], dataset['Y_val'], dataset['Y_test']
-X_train = np.load(f'goes2019_trainX_1562.npy')
-Y_train = np.load(f'goes2019_trainY_1562.npy')
+X_train = np.load(f'goes2019_trainX_small.npy')
+Y_train = np.load(f'goes2019_trainY_small.npy')
+X_val = np.load(f'goes2019_valX_small.npy' )
+Y_val = np.load(f'goes2019_valY_small.npy' )
 
-dim = 256
-X_val   = X_train[-30:,-2:,:,:dim,:dim]  #np.load(f'{root}goes2019_valX.npy')
-Y_val   = Y_train[-30:,1,:,:dim,:dim]  #np.load(f'{root}goes2019_valY.npy')
-
-X_train = X_train[:1480,-2:,:,:dim,:dim]
-Y_train = Y_train[:1480,1,:,:dim,:dim]
-
-#X_test  = X_train[-10:,:,:,:dim,:dim]  #np.load(f'{root}goes2019_testX.npy')
-#Y_test  = Y_train[-10:,:,:,:dim,:dim]  #np.load(f'{root}goes2019_testY.npy')
-X_test = np.load(f'testX.npy')[:,-2:,:,:dim,:dim]
-Y_test = np.load(f'testY.npy')[:,1,:,:dim,:dim]
-
+test_root = f'/share/data/2pals/jim/data/openstl/work_dirs/{name}/saved/'
+X_test = np.load(f'testX.npy')[:,-l:,:,:,:]
+Y_test = np.load(f'testY.npy')[:,:l,:,:,:]
 
 train_set = CustomDataset(X=X_train, Y=Y_train)
 val_set   = CustomDataset(X=X_val, Y=Y_val)
@@ -69,7 +61,7 @@ custom_training_config = {
     'metrics': ['mse', 'mae'],
     'ex_name': name,
     'dataname': 'custom',
-    'in_shape': [2, 3, dim, dim], # frames in sequence, bands, x, y
+    'in_shape': [l, 3, 280, 280], # frames in sequence, bands, x, y
 }
 
 custom_model_config = {
@@ -78,8 +70,8 @@ custom_model_config = {
     'model_type': 'gSTA',
     'N_S': 4,
     'N_T': 8,
-    'hid_S': 256,
-    'hid_T': 512
+    'hid_S': 64,
+    'hid_T': 256
 }
 
 args = create_parser().parse_args([])
@@ -96,8 +88,4 @@ config.update(custom_model_config)       # update the model config
 
 exp = BaseExperiment(args, dataloaders=(dataloader_train, dataloader_val, dataloader_test), strategy='ddp')
 
-print('>'*35 + ' training ' + '<'*35) 
-exp.train()
-
-print('>'*35 + ' testing  ' + '<'*35)
 exp.test()

@@ -37,3 +37,14 @@ for i, start in enumerate(starts):
             
             np.save(path, out.astype(np.float32))
         except: print('no file')
+
+
+fl = glob('/share/data/2pals/jim/data/openstl/stacks/*.npy')
+
+out = np.empty((1,20,3,285,285), dtype=np.float32)
+for file in fl: 
+    temp = np.load(file)
+    for i in range(np.floor(temp.shape[0]/5-4).astype(int)):
+        out = np.concatenate((out, temp[np.newaxis,i*5:i*5+20,:,:,:]), axis=0)
+
+np.save('/share/data/2pals/jim/data/openstl/goes2019.npy', out[1:,:,:,:,:])
