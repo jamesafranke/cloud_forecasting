@@ -11,8 +11,6 @@ Coincident sampling exists across these missions from late August 2018 to the pr
 
 We employ a transformer architecture trained on a novel global mosaic constructed from a constellation of 5 geostationary satellites over 11 visible light and IR channels. Each observation channel captures something unique about the states and flows of moisture and energy in the Earth’s atmosphere. 
 
-Example short-term prediction over the Eastern Pacific: 
+Example short-term colorized IR prediction over the Eastern Pacific: 
 
-![](https://github.com/cloud_forecasting/assets/example.pif)
-
-
+![til](./assets/example.gif)
