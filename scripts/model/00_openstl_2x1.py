@@ -8,9 +8,9 @@ torch.set_float32_matmul_precision('medium')
 
 pre_seq_length = 2
 aft_seq_length = 1
-batch_size = 10
+batch_size = 4
 n_epoch = 30
-name = '01_2x1_big_2'
+name = '02_2x1_512512'
 
 root = '/share/data/2pals/jim/data/openstl/'
 os.chdir(root)
@@ -32,7 +32,6 @@ class CustomDataset(Dataset):
         labels = torch.tensor(self.Y[index]).float()
         return data, labels
 
-print('-------- starting dataloading ------------')
 flX = glob('/share/data/2pals/jim/data/openstl/2x1stacks/*X.npy')
 flX = np.sort(flX)
 X_train = np.empty((1,2,3,256,256), dtype=np.float32)
@@ -49,8 +48,6 @@ Y_val = Y_train[-50:,:,:,:,:]
 
 X_train = X_train[1:-50,:,:,:,:]
 Y_train = Y_train[1:-50,:,:,:,:]
-
-print('-----------', X_train.shape[0], '--------------training samples')
 
 X_test = np.load(f'{root}testX.npy')[:,-2:,:,:dim,:dim]
 Y_test = np.load(f'{root}testY.npy')[:,1,:,:dim,:dim]
@@ -83,7 +80,7 @@ custom_model_config = {
     'model_type': 'gSTA',
     'N_S': 4,
     'N_T': 8,
-    'hid_S': 256,
+    'hid_S': 512,
     'hid_T': 512
 }
 
@@ -99,7 +96,7 @@ for attribute in default_values.keys():
 config.update(custom_training_config)    # update the training config
 config.update(custom_model_config)       # update the model config
 
-exp = BaseExperiment(args, dataloaders=(dataloader_train, dataloader_val, dataloader_test), strategy='ddp')
+exp = BaseExperiment(args, dataloaders=(dataloader_train, dataloader_val, dataloader_test), strategy='ddp')#, callbacks=callbacks)
 
 print('>'*35 + ' training ' + '<'*35) 
 exp.train()

@@ -39,14 +39,20 @@ sbatch -p gpu -G1 -C48g openstl.sbatch
 sbatch -p gpu -G6 -C48g openstl.sbatch
 
 
-#!/bin/bassh
+#!/bin/bash
 #SBATCH --job-name=goes
 eval "$(/share/data/2pals/jim/code/python/mc3/bin/conda 'shell.bash' 'hook')"
 python goes.py
 
 
-sbatch -p cpu -C4 goes.sbatch
+sbatch -p cpu goes.sbatch
 
 sbatch -p cpu beerun.sbatch
 
 sbatch -p gpu -G1 beerun.sbatch
+
+
+#!/bin/bash
+#SBATCH --job-name=remove
+cd /share/data/2pals/jim/data/geostat/
+rm -r goes16/

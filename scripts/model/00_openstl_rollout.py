@@ -1,4 +1,5 @@
-import torch, cv2, os, pickle, numpy as np
+import torch, os, numpy as np
+from glob import glob
 from torch.utils.data import Dataset
 from openstl.api import BaseExperiment
 from openstl.utils import create_parser, default_parser
@@ -9,9 +10,7 @@ pre_seq_length = 2
 aft_seq_length = 1
 batch_size = 10
 n_epoch = 10
-#name = 'band4710_07_hid64_5x5'
-#name = 'band4710_06_hid64'
-name = '01_2x1_big_2'
+name = '01_2x1_big'
 
 root = '/share/data/2pals/jim/data/openstl/'
 os.chdir(root)
@@ -33,14 +32,19 @@ class CustomDataset(Dataset):
         labels = torch.tensor(self.Y[index]).float()
         return data, labels
 
-X_train = np.load(f'goes2019_trainX_small.npy')
-Y_train = np.load(f'goes2019_trainY_small.npy')
-X_val = np.load(f'goes2019_valX_small.npy' )
-Y_val = np.load(f'goes2019_valY_small.npy' )
 
-test_root = f'/share/data/2pals/jim/data/openstl/work_dirs/{name}/saved/'
-X_test = np.load(f'testX.npy')[:,-l:,:,:,:]
-Y_test = np.load(f'testY.npy')[:,:l,:,:,:]
+X_train = np.zeros((20,2,3,256,256), dtype=np.float32)
+Y_train = np.zeros((20,1,3,256,256), dtype=np.float32)
+
+dim = 256
+X_val = X_train[-10:,:,:,:,:] 
+Y_val = Y_train[-10:,:,:,:,:] 
+
+X_train = X_train[1:-10,:,:,:,:]
+Y_train = Y_train[1:-10,:,:,:,:]
+
+X_test = np.load(f'{root}testX.npy')[:,-2:,:,:dim,:dim]
+Y_test = np.load(f'{root}testY.npy')[:,1,:,:dim,:dim]
 
 train_set = CustomDataset(X=X_train, Y=Y_train)
 val_set   = CustomDataset(X=X_val, Y=Y_val)
@@ -61,7 +65,7 @@ custom_training_config = {
     'metrics': ['mse', 'mae'],
     'ex_name': name,
     'dataname': 'custom',
-    'in_shape': [l, 3, 280, 280], # frames in sequence, bands, x, y
+    'in_shape': [2, 3, 256, 256], # frames in sequence, bands, x, y
 }
 
 custom_model_config = {
@@ -70,8 +74,8 @@ custom_model_config = {
     'model_type': 'gSTA',
     'N_S': 4,
     'N_T': 8,
-    'hid_S': 64,
-    'hid_T': 256
+    'hid_S': 256,
+    'hid_T': 512
 }
 
 args = create_parser().parse_args([])
