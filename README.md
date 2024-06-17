@@ -14,3 +14,6 @@ We employ a transformer architecture trained on a novel global mosaic constructe
 Example short-term colorized IR prediction over the Eastern Pacific: 
 
 ![til](./assets/example.gif)
+
+
+<img src="./assets/example.gif" loop=infinite>
