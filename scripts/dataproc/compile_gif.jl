@@ -1,13 +1,12 @@
 using Plots; gr(); Plots.theme(:default)
 using Images, FileIO
 
-root = "/Users/jamesfranke/Documents/julia/cloud_forecasting/figs/gif2/"
-fl  = filter( contains("png"), readdir(root) )
-anim = @animate for i in 1:97
-    plot(load(joinpath(root, fl[i])), showaxis=false, grid=false, xticks=:none, yticks=:none, size=(1200,443), dpi=300)
+root = "/Users/jamesfranke/Documents/julia/cloud_forecasting/figs/cloudbench_gif/"
+fl  = sort(filter( contains("jpg"), readdir(root) ))
+anim = @animate for i in 1:400
+    plot(load(joinpath(root, fl[i])), showaxis=false, grid=false, xticks=:none, yticks=:none, size=(1800,700), dpi=300)
 end
-gif(anim, "/Users/jamesfranke/Documents/julia/cloud_forecasting/figs/stitched_black.mp4", fps = 4)
-
+gif(anim, "/Users/jamesfranke/Documents/julia/cloud_forecasting/cloudbench.mp4", fps = 5)
 
 
 root = "/Users/jamesfranke/Documents/julia/cloud_forecasting/figs/gif/"
